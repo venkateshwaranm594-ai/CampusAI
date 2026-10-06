@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Institution AI – Advanced Attendance Management System for AI & Data Science Department with real-time analytics and flyer generation.">
+  <title>Smart Institution AI – Attendance Management System</title>
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for crisp iconography -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- html2canvas for client-side high-res flyer PNG generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation / Institutional Branding Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-titles">
+          <h1 class="brand-title">Smart Institution AI</h1>
+          <p class="brand-subtitle" id="headerDeptSubtitle">AI & DS Department – Attendance Management System</p>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="system-status">
+          <span class="pulse-indicator"></span>
+          <span class="status-label">System Online</span>
+        </div>
+        <div class="current-date-badge" id="currentDateBadge">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span id="dateDisplay">Loading date...</span>
+        </div>
+        <!-- Settings Button in Header -->
+        <button id="openSettingsBtn" class="btn btn-secondary btn-sm header-settings-btn" title="College & Department Settings">
+          <i class="fa-solid fa-gear"></i> Settings
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    
+    <!-- 1. DASHBOARD CARDS SECTION -->
+    <section class="dashboard-metrics-section" aria-label="Attendance Overview Metrics">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2 class="section-heading"><i class="fa-solid fa-chart-pie"></i> Real-time Attendance Overview</h2>
+          <p class="section-subtext">Live academic metrics synchronized with institution SQLite database</p>
+        </div>
+        <div class="section-actions">
+          <button id="refreshDataBtn" class="btn btn-secondary btn-sm" title="Refresh dashboard data">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <!-- Total Students Card -->
+        <div class="metric-card card-total">
+          <div class="metric-icon-box">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Total Students</span>
+            <h3 class="metric-value" id="totalStudentsCount">--</h3>
+            <span class="metric-tag tag-primary">Enrolled AI & DS</span>
+          </div>
+        </div>
+
+        <!-- Present Today Card -->
+        <div class="metric-card card-present">
+          <div class="metric-icon-box">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Present Today</span>
+            <h3 class="metric-value text-success" id="presentTodayCount">--</h3>
+            <span class="metric-tag tag-success" id="presentPercentageTag">In Classroom</span>
+          </div>
+        </div>
+
+        <!-- Absent Today Card -->
+        <div class="metric-card card-absent">
+          <div class="metric-icon-box">
+            <i class="fa-solid fa-user-xmark"></i>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Absent Today</span>
+            <h3 class="metric-value text-danger" id="absentTodayCount">--</h3>
+            <span class="metric-tag tag-danger" id="absentPercentageTag">On Leave</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. CONTROL BAR: SEARCH, ADD STUDENT & QUICK ACTIONS -->
+    <section class="controls-section" aria-label="Controls and Quick Actions">
+      <div class="controls-container">
+        <!-- Search Box -->
+        <div class="search-box-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="studentSearchInput" 
+            class="search-input" 
+            placeholder="Search by student name or roll number (e.g. Arun, AI101)..." 
+            aria-label="Search students"
+            autocomplete="off"
+          />
+          <button id="clearSearchBtn" class="clear-search-btn" title="Clear search" style="display: none;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-wrapper">
+          <button id="openAddStudentModalBtn" class="btn btn-success">
+            <i class="fa-solid fa-user-plus"></i> + Add Student
+          </button>
+          <button id="viewTodayAttendanceBtn" class="btn btn-primary">
+            <i class="fa-solid fa-clipboard-user"></i> View Attendance
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TODAY'S ABSENTEES SECTION -->
+    <section class="absentees-section" aria-label="Today's Absentees">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2 class="section-heading text-danger">
+            <i class="fa-solid fa-bell"></i> Today's Absentees
+          </h2>
+          <p class="section-subtext">Students marked absent for today's active classroom sessions</p>
+        </div>
+        <div class="absentees-header-actions">
+          <span class="badge-count" id="absenteesBadgeCount">0 Absent</span>
+          <button id="openFlyerGeneratorBtn" class="btn btn-flyer" title="Generate attendance flyer with today's absentees">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Create Attendance Flyer
+          </button>
+        </div>
+      </div>
+
+      <!-- Absentees Grid Container -->
+      <div class="absentees-grid" id="absenteesContainer">
+        <div class="loading-state">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading absentee records...
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. STUDENT ATTENDANCE SECTION (ALL STUDENTS) -->
+    <section class="students-section" aria-label="Student Directory & Attendance">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2 class="section-heading">
+            <i class="fa-solid fa-id-card-clip"></i> Student Attendance Roster
+          </h2>
+          <p class="section-subtext">Interactive student cards — click any card to mark attendance or view full breakdown</p>
+        </div>
+        <div class="filter-status-info" id="studentResultsCount">Showing 0 students</div>
+      </div>
+
+      <!-- Student Cards Grid -->
+      <div class="students-grid" id="studentsContainer">
+        <div class="loading-state">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading student records from database...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; <span id="currentYear">2026</span> Smart Institution AI &bull; Department of Artificial Intelligence & Data Science</p>
+      <div class="footer-badges">
+        <span class="tech-pill">Node.js + Express</span>
+        <span class="tech-pill">SQLite (better-sqlite3)</span>
+        <span class="tech-pill">Multer Uploads</span>
+        <span class="tech-pill">Flyer Generator</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- MODAL 1: ADD STUDENT MODAL -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="addStudentModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-badge-avatar bg-green">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">Add New Student</h3>
+            <span class="modal-subtitle">Enroll student into SQLite database</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeAddStudentModalBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="addStudentForm" class="modal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="newStudentName" class="form-label">Student Full Name <span class="required">*</span></label>
+            <input type="text" id="newStudentName" name="name" class="form-input" placeholder="e.g. Suresh Kumar" required autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label for="newStudentRoll" class="form-label">Roll Number <span class="required">*</span></label>
+            <input type="text" id="newStudentRoll" name="roll_no" class="form-input" placeholder="e.g. AI107" required autocomplete="off" />
+            <small class="form-hint">Must be unique (e.g. AI101 - AI199).</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Student Photo (Optional)</label>
+            <div class="file-upload-box">
+              <input type="file" id="newStudentPhoto" name="photo" class="file-input" accept="image/png, image/jpeg, image/jpg, image/webp" />
+              <label for="newStudentPhoto" class="file-label">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span id="newStudentPhotoLabel">Click or drop student photo here</span>
+              </label>
+              <div id="newStudentPhotoPreviewContainer" class="photo-preview-wrap" style="display: none;">
+                <img id="newStudentPhotoPreview" src="" alt="Student photo preview" class="preview-img" />
+                <button type="button" id="removePhotoBtn" class="remove-photo-btn" title="Remove photo">&times;</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="newStudentLeaveReason" class="form-label">Leave Reason (Optional)</label>
+            <input type="text" id="newStudentLeaveReason" name="leave_reason" class="form-input" placeholder="Provide reason only if absent today (e.g. Sick Leave)" autocomplete="off" />
+            <small class="form-hint">Leave blank if the student is joining active sessions normally.</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAddStudentBtn">Cancel</button>
+          <button type="submit" class="btn btn-success" id="saveStudentBtn">
+            <i class="fa-solid fa-check"></i> Save Student
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: STUDENT DETAILS & ATTENDANCE MODAL -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="studentDetailsModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-badge-avatar" id="modalStudentAvatarWrap">
+            <i class="fa-solid fa-user-graduate" id="modalStudentAvatarIcon"></i>
+            <img id="modalStudentAvatarImg" src="" alt="Student Photo" class="modal-avatar-img" style="display: none;" />
+          </div>
+          <div>
+            <h3 class="modal-title" id="modalStudentName">Student Name</h3>
+            <span class="modal-subtitle" id="modalStudentRollNo">Roll No</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeStudentModalBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Main Percentage Banner -->
+        <div class="modal-score-banner">
+          <div class="score-circle" id="modalScoreCircle">
+            <span class="score-value" id="modalAttendancePct">0%</span>
+            <span class="score-label">Attendance</span>
+          </div>
+          <div class="score-details">
+            <h4 class="score-heading" id="modalAttendanceStatus">Good Standing</h4>
+            <p class="score-desc" id="modalAttendanceRemark">Attendance criteria meets department eligibility.</p>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="modalProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="modal-details-grid">
+          <div class="detail-box">
+            <div class="detail-icon bg-blue">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="detail-content">
+              <span class="detail-label">Total Working Days</span>
+              <span class="detail-value" id="modalTotalDays">0</span>
+            </div>
+          </div>
+
+          <div class="detail-box">
+            <div class="detail-icon bg-green">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="detail-content">
+              <span class="detail-label">Present Days</span>
+              <span class="detail-value text-success" id="modalPresentDays">0</span>
+            </div>
+          </div>
+
+          <div class="detail-box">
+            <div class="detail-icon bg-red">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <div class="detail-content">
+              <span class="detail-label">Absent Days</span>
+              <span class="detail-value text-danger" id="modalAbsentDays">0</span>
+            </div>
+          </div>
+
+          <div class="detail-box">
+            <div class="detail-icon bg-purple">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="detail-content">
+              <span class="detail-label">Overall Percentage</span>
+              <span class="detail-value text-primary" id="modalAttendancePctDetail">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ATTENDANCE CONTROLS SECTION -->
+        <div class="modal-attendance-controls-box">
+          <h4 class="controls-box-title"><i class="fa-solid fa-user-check"></i> Mark Today's Attendance</h4>
+          <div id="attendanceAlreadyMarkedNotice" class="attendance-notice-box" style="display: none;">
+            <i class="fa-solid fa-circle-info"></i> Attendance has already been logged for this student today.
+          </div>
+
+          <div id="attendanceControlsActionWrap">
+            <!-- Reason field if marking absent -->
+            <div class="form-group" id="modalLeaveReasonGroup" style="margin-bottom: 0.75rem;">
+              <label for="modalLeaveReasonInput" class="form-label">Leave Reason (if Absent)</label>
+              <input type="text" id="modalLeaveReasonInput" class="form-input form-input-sm" placeholder="e.g. Fever, Medical Leave, Personal Emergency" autocomplete="off" />
+            </div>
+
+            <div class="attendance-action-buttons">
+              <button type="button" class="btn btn-present" id="markPresentBtn">
+                <i class="fa-solid fa-circle-check"></i> Mark Present
+              </button>
+              <button type="button" class="btn btn-absent" id="markAbsentBtn">
+                <i class="fa-solid fa-circle-xmark"></i> Mark Absent
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer modal-footer-split">
+        <button type="button" class="btn btn-danger-outline btn-sm" id="deleteStudentBtn">
+          <i class="fa-solid fa-trash-can"></i> Delete Student
+        </button>
+        <button class="btn btn-secondary" id="closeStudentModalFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: TODAY'S ATTENDANCE MODAL -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="todayAttendanceModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-badge-avatar bg-indigo">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">Today's Attendance Sheet</h3>
+            <span class="modal-subtitle" id="todayModalDate">Session: Loading...</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeTodayAttendanceModalBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="table-filter-bar">
+          <div class="filter-tabs">
+            <button class="tab-btn active" data-filter="all">All (<span id="filterAllCount">0</span>)</button>
+            <button class="tab-btn" data-filter="Present">Present (<span id="filterPresentCount">0</span>)</button>
+            <button class="tab-btn" data-filter="Absent">Absent (<span id="filterAbsentCount">0</span>)</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Overall Attendance</th>
+                <th>Status Today</th>
+              </tr>
+            </thead>
+            <tbody id="todayAttendanceTableBody">
+              <tr>
+                <td colspan="5" class="table-loading">Loading today's attendance...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeTodayAttendanceModalFooterBtn">Close Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: COLLEGE SETTINGS MODAL -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-badge-avatar bg-purple">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">College & Department Settings</h3>
+            <span class="modal-subtitle">Configure institutional flyer & notice credentials</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeSettingsModalBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="settingsForm" class="modal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="settingCollegeName" class="form-label">College Name</label>
+            <input type="text" id="settingCollegeName" name="college_name" class="form-input" placeholder="e.g. SMART INSTITUTION OF ENGINEERING & TECHNOLOGY" required />
+          </div>
+
+          <div class="form-group">
+            <label for="settingDepartmentName" class="form-label">Department Name</label>
+            <input type="text" id="settingDepartmentName" name="department_name" class="form-input" placeholder="e.g. DEPARTMENT OF ARTIFICIAL INTELLIGENCE & DATA SCIENCE" required />
+          </div>
+
+          <div class="form-group">
+            <label for="settingSection" class="form-label">Class Section</label>
+            <input type="text" id="settingSection" name="section" class="form-input" placeholder="e.g. III Year – Section A" required />
+          </div>
+
+          <div class="form-group">
+            <label for="settingAdviserName" class="form-label">Class Adviser Name</label>
+            <input type="text" id="settingAdviserName" name="adviser_name" class="form-input" placeholder="e.g. Dr. S. K. Ramanathan, M.E., Ph.D." required />
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">College Logo (PNG/SVG)</label>
+              <input type="file" id="settingCollegeLogo" name="college_logo" class="file-input" accept="image/*" />
+              <label for="settingCollegeLogo" class="file-label file-label-sm">
+                <i class="fa-solid fa-image"></i> <span id="settingCollegeLogoLabel">Choose Logo</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Adviser Photo (PNG/JPG)</label>
+              <input type="file" id="settingAdviserPhoto" name="adviser_photo" class="file-input" accept="image/*" />
+              <label for="settingAdviserPhoto" class="file-label file-label-sm">
+                <i class="fa-solid fa-user"></i> <span id="settingAdviserPhotoLabel">Choose Photo</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveSettingsBtn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 5: ATTENDANCE FLYER GENERATOR MODAL -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="flyerModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card modal-flyer-viewer">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <div class="modal-badge-avatar bg-indigo">
+            <i class="fa-solid fa-bullhorn"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">Attendance Flyer Generator</h3>
+            <span class="modal-subtitle">Official 4:5 Social / Notice Board Poster (1080 &times; 1350 px)</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeFlyerModalBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body flyer-modal-body">
+        <!-- Toolbar inside flyer generator -->
+        <div class="flyer-controls-bar">
+          <div class="flyer-meta-text">
+            <i class="fa-solid fa-info-circle text-primary"></i>
+            <span>Preview generated dynamically using today's SQLite absentees list.</span>
+          </div>
+          <div class="flyer-actions-btn-group">
+            <button type="button" class="btn btn-secondary btn-sm" id="editFlyerSettingsBtn">
+              <i class="fa-solid fa-pen-to-square"></i> Edit Flyer Settings
+            </button>
+            <button type="button" class="btn btn-success btn-sm" id="downloadFlyerPngBtn">
+              <i class="fa-solid fa-download"></i> Download PNG
+            </button>
+          </div>
+        </div>
+
+        <!-- No Absentees Warning State -->
+        <div id="flyerNoAbsenteesState" class="empty-state" style="display: none; padding: 4rem 2rem;">
+          <i class="fa-solid fa-award text-success" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+          <h3 style="color: #065f46; font-size: 1.4rem; font-weight: 700;">No students are absent today!</h3>
+          <p style="color: #047857; max-width: 480px; margin: 0.5rem auto 1.5rem;">
+            100% classroom attendance recorded. An attendance flyer is not required because there are zero absentees.
+          </p>
+          <button type="button" class="btn btn-secondary" id="closeNoAbsenteesFlyerBtn">Back to Dashboard</button>
+        </div>
+
+        <!-- Flyer Scaled Canvas Viewport -->
+        <div class="flyer-viewport" id="flyerViewport">
+          <!-- 1080 x 1350 Target Flyer Canvas -->
+          <div class="attendance-poster" id="attendanceFlyerPoster">
+            
+            <!-- Poster Top Border Accent -->
+            <div class="poster-top-bar"></div>
+
+            <!-- Poster Header -->
+            <header class="poster-header">
+              <div class="poster-crest-wrap">
+                <img id="flyerCollegeLogo" src="/assets/college-crest.svg" alt="College Crest" class="poster-college-logo" />
+              </div>
+              <div class="poster-institution-info">
+                <h2 class="poster-college-name" id="flyerCollegeName">SMART INSTITUTION OF ENGINEERING & TECHNOLOGY</h2>
+                <h3 class="poster-dept-name" id="flyerDeptName">DEPARTMENT OF ARTIFICIAL INTELLIGENCE & DATA SCIENCE</h3>
+                <span class="poster-section-pill" id="flyerSectionName">III Year – Section A</span>
+              </div>
+            </header>
+
+            <!-- Decorative Title Ribbon -->
+            <div class="poster-ribbon">
+              <div class="ribbon-line"></div>
+              <div class="ribbon-content">
+                <span class="ribbon-badge">OFFICIAL NOTICE</span>
+                <h1 class="ribbon-title">TODAY'S ABSENT STUDENTS</h1>
+                <div class="ribbon-date-tag">
+                  <i class="fa-regular fa-calendar-check"></i>
+                  <span id="flyerFormattedDate">22 SEPTEMBER 2026</span>
+                </div>
+              </div>
+              <div class="ribbon-line"></div>
+            </div>
+
+            <!-- Poster Absentees Grid -->
+            <div class="poster-absentees-grid" id="flyerStudentsGrid">
+              <!-- Dynamically rendered absent student cards -->
+            </div>
+
+            <!-- Poster Footer: Adviser & Official Signature -->
+            <footer class="poster-footer">
+              <div class="poster-accreditation">
+                <span>Autonomous Institution</span> &bull; 
+                <span>Affiliated to Anna University</span> &bull; 
+                <span>Accredited by NAAC 'A++' Grade</span>
+              </div>
+
+              <div class="poster-sign-row">
+                <div class="adviser-signature-box">
+                  <div class="adviser-photo-frame" id="flyerAdviserPhotoFrame">
+                    <img id="flyerAdviserPhoto" src="" alt="Adviser" class="adviser-thumb" style="display: none;" />
+                    <i class="fa-solid fa-user-tie" id="flyerAdviserIcon"></i>
+                  </div>
+                  <div class="adviser-details">
+                    <span class="adviser-role-label">Class Adviser</span>
+                    <strong class="adviser-full-name" id="flyerAdviserName">Dr. S. K. Ramanathan, M.E., Ph.D.</strong>
+                    <span class="adviser-dept-label">Dept. of AI & Data Science</span>
+                  </div>
+                </div>
+
+                <div class="hod-seal-box">
+                  <div class="official-seal-stamp">
+                    <i class="fa-solid fa-stamp"></i>
+                    <span>VERIFIED &bull; AI&amp;DS</span>
+                  </div>
+                  <span class="seal-caption">Head of Department</span>
+                </div>
+              </div>
+            </footer>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeFlyerModalFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Frontend JavaScript -->
+  <script src="/script.js"></script>
+</body>
+</html>

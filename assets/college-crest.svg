@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <path id="textPathTop" d="M 30,100 A 70,70 0 1,1 170,100" fill="none" />
+    <linearGradient id="crestGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="crestRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#991b1b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Ring -->
+  <circle cx="100" cy="100" r="94" fill="#ffffff" stroke="#1e293b" stroke-width="5"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="62" fill="#fffbeb" stroke="#1e293b" stroke-width="3"/>
+
+  <!-- Top Badge Ribbon -->
+  <path d="M 80,12 Q 100,2 120,12 L 115,28 Q 100,22 85,28 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+  <text x="100" y="22" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">ESES</text>
+
+  <!-- Circular Text in Ring -->
+  <text font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="900" fill="#854d0e" letter-spacing="0.8">
+    <textPath href="#textPathTop" startOffset="50%" text-anchor="middle">
+      ERODE SENGUNTHAR ENGG COLLEGE
+    </textPath>
+  </text>
+
+  <!-- Center Shield Elements: Gear, Tower, Torch, Book -->
+  <g transform="translate(100, 96)">
+    <!-- Gear cog -->
+    <path d="M -22,-22 L -18,-26 L -14,-22 L -10,-24 L -8,-29 L -2,-28 L -1,-23 L 4,-23 L 7,-28 L 13,-27 L 13,-22 L 18,-20 L 23,-24 L 27,-19 L 23,-15 L 25,-10 L 30,-8 L 29,-2 L 24,-1 L 24,4 L 29,7 L 28,13 L 23,13 L 21,18 L 25,23 L 20,27 L 16,23 L 11,25 L 9,30 L 3,29 L 2,24 L -3,24 L -6,29 L -12,28 L -12,23 L -17,21 L -22,25 L -26,20 L -22,16 L -24,11 L -29,9 L -28,3 L -23,2 L -23,-3 L -28,-6 L -27,-12 L -22,-12 Z" fill="#cbd5e1" stroke="#334155" stroke-width="1.5" opacity="0.8"/>
+    <circle cx="0" cy="0" r="15" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+
+    <!-- Electrical Transmission Tower -->
+    <path d="M -8,18 L -3,-14 L 3,-14 L 8,18 M -5,-4 L 5,-4 M -7,6 L 7,6 M -9,-10 L 9,-10 M -4,-18 L 4,-18 M 0,-24 L 0,-18" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Torch Flame -->
+    <path d="M 0,-16 C -4,-22 0,-30 0,-30 C 0,-30 4,-22 0,-16 Z" fill="url(#crestRed)"/>
+    <path d="M 0,-18 C -2,-22 0,-26 0,-26 C 0,-26 2,-22 0,-18 Z" fill="#facc15"/>
+    
+    <!-- Open Book at base -->
+    <path d="M -16,14 Q -8,11 0,14 Q 8,11 16,14 L 16,22 Q 8,18 0,22 Q -8,18 -16,22 Z" fill="#f8fafc" stroke="#1e293b" stroke-width="1.5"/>
+    <line x1="0" y1="14" x2="0" y2="22" stroke="#1e293b" stroke-width="1.5"/>
+  </g>
+
+  <!-- Bottom Ribbon: SERVICE EXCELLENCE CHARACTER -->
+  <g transform="translate(100, 168)">
+    <path d="M -90,-4 L -82,-14 L -65,-8 L 65,-8 L 82,-14 L 90,-4 L 75,10 L -75,10 Z" fill="url(#crestRed)" stroke="#7f1d1d" stroke-width="2"/>
+    <rect x="-70" y="-8" width="140" height="18" fill="#b91c1c" rx="2"/>
+    <text x="-46" y="5" font-family="'Segoe UI', Roboto, sans-serif" font-size="7.5" font-weight="800" fill="#ffffff" text-anchor="middle">SERVICE</text>
+    <circle cx="-18" cy="2" r="1.5" fill="#fde047"/>
+    <text x="0" y="5" font-family="'Segoe UI', Roboto, sans-serif" font-size="7.5" font-weight="800" fill="#ffffff" text-anchor="middle">EXCELLENCE</text>
+    <circle cx="18" cy="2" r="1.5" fill="#fde047"/>
+    <text x="46" y="5" font-family="'Segoe UI', Roboto, sans-serif" font-size="7.5" font-weight="800" fill="#ffffff" text-anchor="middle">CHARACTER</text>
+  </g>
+</svg>
