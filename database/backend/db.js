@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DB_FILE = path.join(__dirname, '..', 'database', 'campuspulse.json');
+const DB_FILE = process.env.DATABASE_PATH || process.env.DB_PATH || process.env.DB_FILE || path.join(__dirname, '..', 'database', 'campuspulse.json');
 
 // Default initial state structure
 const initialData = {
@@ -35,7 +35,7 @@ class JSONDatabase {
   }
 
   init() {
-    const dbDir = path.join(__dirname, '..', 'database');
+    const dbDir = path.dirname(DB_FILE);
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
     }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,12 +8,19 @@ const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.use(cors());
+const corsOptions = process.env.CORS_ORIGIN ? { origin: process.env.CORS_ORIGIN } : {};
+app.use(cors(corsOptions));
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 app.use(express.json({ limit: '10mb' }));
 
 // Ensure upload folders exist
-const uploadsBaseDir = path.join(__dirname, '..', 'uploads');
+const uploadsBaseDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
 const studentUploadsDir = path.join(uploadsBaseDir, 'students');
 const adviserUploadsDir = path.join(uploadsBaseDir, 'advisers');
 const collegeUploadsDir = path.join(uploadsBaseDir, 'college');
@@ -541,6 +549,17 @@ app.post('/api/flyers', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 CampusPulse AI Server running on http://localhost:${PORT}`);
+const frontendDistPath = path.join(__dirname, '..', 'frontend', 'dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 CampusPulse AI Server running on http://System.Management.Automation.Internal.Host.InternalHost:${PORT}`);
 });
